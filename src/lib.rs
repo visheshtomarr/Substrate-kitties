@@ -7,6 +7,11 @@ pub use pallet::*;
 
 #[frame::pallet(dev_mode)]
 pub mod pallet {
+	use core::default;
+
+use frame_system::Config;
+	use frame_system::Key;
+
 	use super::*;
 
 	#[pallet::pallet]
@@ -17,8 +22,13 @@ pub mod pallet {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 	}
 
+	/// Storage to store count of kitties.
 	#[pallet::storage]
 	pub(super) type CountForKitties<T: Config> = StorageValue<Value = u32, QueryKind = ValueQuery>;
+
+	/// Storage to store different kitties.
+	#[pallet::storage]
+	pub(super) type Kitties<T: Config> = StorageMap<Key = [u8; 32], Value = ()>;
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -39,7 +49,10 @@ pub mod pallet {
 		// control logic based on that information.
 		pub fn create_kitty(origin: OriginFor<T>) -> DispatchResult {
 			let who = ensure_signed(origin)?;
-			Self::mint(who)?;
+
+			// Create a default id to insert kitty into the map when we call mint().
+			let default_id = [0u8; 32] ;
+			Self::mint(who, default_id)?;
 			Ok(())
 		}
 	}
