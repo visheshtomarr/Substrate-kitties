@@ -17,6 +17,9 @@ pub mod pallet {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 	}
 
+	#[pallet::storage]
+	pub(super) type CountForKitties<T: Config> = StorageValue<Value = u32> ;
+
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
@@ -28,6 +31,9 @@ pub mod pallet {
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
+		// "origin" is the first parameter to every callable function.
+		// It describes where the call is calling from, and allows us to perform simple access control
+		// logic based on that information.
 		pub fn create_kitty(origin: OriginFor<T>) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			Self::mint(who)?;
