@@ -18,7 +18,7 @@ pub mod pallet {
 	}
 
 	#[pallet::storage]
-	pub(super) type CountForKitties<T: Config> = StorageValue<Value = u32> ;
+	pub(super) type CountForKitties<T: Config> = StorageValue<Value = u32, QueryKind = ValueQuery>;
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -35,8 +35,8 @@ pub mod pallet {
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		// "origin" is the first parameter to every callable function.
-		// It describes where the call is calling from, and allows us to perform simple access control
-		// logic based on that information.
+		// It describes where the call is calling from, and allows us to perform simple access
+		// control logic based on that information.
 		pub fn create_kitty(origin: OriginFor<T>) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			Self::mint(who)?;
