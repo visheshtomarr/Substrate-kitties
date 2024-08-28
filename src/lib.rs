@@ -27,7 +27,10 @@ pub mod pallet {
 	}
 
 	#[pallet::error]
-	pub enum Error<T> {}
+	pub enum Error<T> {
+		/// Overflow occurs while storing too many kitties.
+		TooManyKitties,
+	}
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
