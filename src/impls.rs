@@ -3,6 +3,9 @@ use frame::prelude::*;
 
 impl<T: Config> Pallet<T> {
 	pub fn mint(owner: T::AccountId, default_kitty: [u8; 32]) -> DispatchResult {
+		// Ensure whether a kitty is already present in our storage or not.
+		ensure!(!Kitties::<T>::contains_key(default_kitty), Error::<T>::DuplicateKitty);
+
 		// Get the current count of kitties.
 		let current_count = CountForKitties::<T>::get();
 

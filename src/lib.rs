@@ -9,7 +9,7 @@ pub use pallet::*;
 pub mod pallet {
 	use core::default;
 
-use frame_system::Config;
+use frame_system::Config as OtherConfig;
 	use frame_system::Key;
 
 	use super::*;
@@ -40,6 +40,8 @@ use frame_system::Config;
 	pub enum Error<T> {
 		/// Overflow occurs while storing too many kitties.
 		TooManyKitties,
+		/// If a kitty is already present in storage.
+		DuplicateKitty,
 	}
 
 	#[pallet::call]
