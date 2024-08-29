@@ -9,7 +9,7 @@ pub use pallet::*;
 pub mod pallet {
 	use core::default;
 
-use frame_system::Config as OtherConfig;
+	use frame_system::Config as OtherConfig;
 	use frame_system::Key;
 
 	use super::*;
@@ -62,7 +62,7 @@ use frame_system::Config as OtherConfig;
 			let who = ensure_signed(origin)?;
 
 			// Create a default id to insert kitty into the map when we call mint().
-			let dna = [0u8; 32] ;
+			let dna = Self::gen_dna();
 			Self::mint(who, dna)?;
 			Ok(())
 		}

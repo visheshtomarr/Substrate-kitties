@@ -1,10 +1,25 @@
 use super::*;
 use frame::prelude::*;
+use frame::primitives::BlakeTwo256;
+use frame::traits::Hash;
 
 impl<T: Config> Pallet<T> {
+	// Generates a unique dna by hashing data from 'frame_system::Pallet::<T>'.
+	pub fn gen_dna() -> [u8; 32] {
+		let unique_payload = (
+			frame_system::Pallet::<T>::parent_hash(),
+			frame_system::Pallet::<T>::block_number(),
+			frame_system::Pallet::<T>::extrinsic_index(),
+			CountForKitties::<T>::get(),
+		);
+
+		BlakeTwo256::hash_of(&unique_payload).into()
+	}
+
+	// Mint a new kitty.
 	pub fn mint(owner: T::AccountId, dna: [u8; 32]) -> DispatchResult {
 		// Create an instance of Kitty.
-		let kitty = Kitty { dna, owner: owner.clone() } ;
+		let kitty = Kitty { dna, owner: owner.clone() };
 
 		// Ensure whether a kitty is already present in our storage or not.
 		ensure!(!Kitties::<T>::contains_key(dna), Error::<T>::DuplicateKitty);
@@ -16,7 +31,7 @@ impl<T: Config> Pallet<T> {
 		let new_count = current_count.checked_add(1).ok_or(Error::<T>::TooManyKitties)?;
 
 		// Inserts a new kitty in 'Kitties' map whenever mint() is called.
-		Kitties::<T>::insert(dna, kitty) ;
+		Kitties::<T>::insert(dna, kitty);
 
 		// Set new count of kitties.
 		CountForKitties::<T>::set(new_count);
