@@ -22,6 +22,12 @@ use frame_system::Config as OtherConfig;
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 	}
 
+	/// Struct to represent a kitty.
+	pub struct Kitty<T: Config> {
+		dna: [u8; 32],
+		owner: T::AccountId,
+	}
+
 	/// Storage to store count of kitties.
 	#[pallet::storage]
 	pub(super) type CountForKitties<T: Config> = StorageValue<Value = u32, QueryKind = ValueQuery>;
@@ -53,7 +59,7 @@ use frame_system::Config as OtherConfig;
 			let who = ensure_signed(origin)?;
 
 			// Create a default id to insert kitty into the map when we call mint().
-			let default_id = [0u8; 32] ;
+			let dna = [0u8; 32] ;
 			Self::mint(who, default_id)?;
 			Ok(())
 		}
