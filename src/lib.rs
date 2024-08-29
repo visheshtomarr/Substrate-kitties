@@ -23,9 +23,12 @@ use frame_system::Config as OtherConfig;
 	}
 
 	/// Struct to represent a kitty.
+	#[derive(Encode, Decode, MaxEncodedLen, TypeInfo)]
+	#[scale_info(skip_type_params(T))]
 	pub struct Kitty<T: Config> {
-		dna: [u8; 32],
-		owner: T::AccountId,
+		// Using 32 bytes to represent a kitty DNA.
+		pub dna: [u8; 32],
+		pub owner: T::AccountId,
 	}
 
 	/// Storage to store count of kitties.
@@ -34,7 +37,7 @@ use frame_system::Config as OtherConfig;
 
 	/// Storage to store different kitties.
 	#[pallet::storage]
-	pub(super) type Kitties<T: Config> = StorageMap<Key = [u8; 32], Value = ()>;
+	pub(super) type Kitties<T: Config> = StorageMap<Key = [u8; 32], Value = Kitty<T>>;
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -60,7 +63,7 @@ use frame_system::Config as OtherConfig;
 
 			// Create a default id to insert kitty into the map when we call mint().
 			let dna = [0u8; 32] ;
-			Self::mint(who, default_id)?;
+			Self::mint(who, dna)?;
 			Ok(())
 		}
 	}
