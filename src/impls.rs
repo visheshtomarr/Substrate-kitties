@@ -33,7 +33,7 @@ impl<T: Config> Pallet<T> {
 		let new_count = current_count.checked_add(1).ok_or(Error::<T>::TooManyKitties)?;
 
 		// Append kitty's DNA to the vector for the 'owner'
-		KittiesOwned::<T>::append(&owner, dna);
+		KittiesOwned::<T>::try_append(&owner, dna).map_err(|_| Error::<T>::TooManyOwnedKitties)?;
 
 		// Inserts a new kitty in 'Kitties' map whenever mint() is called.
 		Kitties::<T>::insert(dna, kitty);

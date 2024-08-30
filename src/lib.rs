@@ -41,8 +41,13 @@ pub mod pallet {
 
 	/// Storage to store which kitties belongs to which owner.
 	#[pallet::storage]
-	pub(super) type KittiesOwned<T: Config> =
-		StorageMap<Key = T::AccountId, Value = Vec<[u8; 32]>, QueryKind = ValueQuery>;
+	pub(super) type KittiesOwned<T: Config> = StorageMap<
+		Key = T::AccountId,
+		// We will be using a 'BoundedVec' instead of normal vec to avoid storing too many kitties
+		// and their owner.
+		Value = BoundedVec<[u8; 32], ConstU32<100>>,
+		QueryKind = ValueQuery,
+	>;
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -56,6 +61,8 @@ pub mod pallet {
 		TooManyKitties,
 		/// If a kitty is already present in storage.
 		DuplicateKitty,
+		/// If the number of owned kitties excceed 100.
+		TooManyOwnedKitties,
 	}
 
 	#[pallet::call]
