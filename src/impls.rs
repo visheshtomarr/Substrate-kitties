@@ -41,8 +41,19 @@ impl<T: Config> Pallet<T> {
 		// Set new count of kitties.
 		CountForKitties::<T>::set(new_count);
 
-		// Emit event.
+		// Emit successful creation event.
 		Self::deposit_event(Event::<T>::Created { owner });
+		Ok(())
+	}
+
+	// Transfer a kitty.
+	pub fn do_transfer(
+		from: T::AccountId, 
+		to: T::AccountId, 
+		kitty_id: [u8; 32]
+	) -> DispatchResult {
+		// Emit successful transfer event.
+		Self::deposit_event(Event::<T>::Transferred { from, to, kitty_id });
 		Ok(())
 	}
 }

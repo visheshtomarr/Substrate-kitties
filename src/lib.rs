@@ -52,7 +52,10 @@ pub mod pallet {
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
+		/// When a new kitty is minted.
 		Created { owner: T::AccountId },
+		/// When a kitty is successfully tranferred.
+		Transferred { from: T::AccountId, to: T::AccountId, kitty_id: [u8; 32] },
 	}
 
 	#[pallet::error]
@@ -76,6 +79,19 @@ pub mod pallet {
 			// Create a default id to insert kitty into the map when we call mint().
 			let dna = Self::gen_dna();
 			Self::mint(who, dna)?;
+			Ok(())
+		}
+
+		/// Extrinsic to implement transfer of a kitty.
+		pub fn transfer(
+			origin: OriginFor<T>,
+			to: T::AccountId,
+			kitty_id: [u8; 32],
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			// Call the internal function 'do_transfer()' to execute the transfer logic.
+			Self::do_transfer(who, to, kitty_id)?;
 			Ok(())
 		}
 	}
