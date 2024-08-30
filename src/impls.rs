@@ -6,6 +6,8 @@ use frame::traits::Hash;
 impl<T: Config> Pallet<T> {
 	// Generates a unique dna by hashing data from 'frame_system::Pallet::<T>'.
 	pub fn gen_dna() -> [u8; 32] {
+		// Create a randomness payload.
+		// Mulitple kitties can be generated in the same block retaining randomness.
 		let unique_payload = (
 			frame_system::Pallet::<T>::parent_hash(),
 			frame_system::Pallet::<T>::block_number(),
@@ -29,6 +31,9 @@ impl<T: Config> Pallet<T> {
 
 		// Create new count by adding one to the current count while using safe math.
 		let new_count = current_count.checked_add(1).ok_or(Error::<T>::TooManyKitties)?;
+
+		// Append kitty's DNA to the vector for the 'owner'
+		KittiesOwned::<T>::append(&owner, dna);
 
 		// Inserts a new kitty in 'Kitties' map whenever mint() is called.
 		Kitties::<T>::insert(dna, kitty);
