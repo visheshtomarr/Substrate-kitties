@@ -52,6 +52,46 @@ impl<T: Config> Pallet<T> {
 		to: T::AccountId, 
 		kitty_id: [u8; 32]
 	) -> DispatchResult {
+		// Transfer should not be happening to the same owner.
+		ensure!(from != to, Error::<T>::TransferToSelf);
+
+		// Get the kitty from the storage (if it exists).
+		let mut kitty = Kitties::<T>::get(kitty_id).ok_or(Error::<T>::KittyNotFound)?;
+
+		// Kitty should be owned by 'from' to initiate a transfer.
+		ensure!(kitty.owner == from, Error::<T>::NotOwner);
+
+		// Update the owner of kitty to AccountId 'to'.
+		kitty.owner = to.clone();
+
+		// Update KittiesOwned for 'from' and 'to'.
+		let mut to_owned = KittiesOwned::<T>::get(&to);
+
+		// Try push the kitty id for the account 'to'. If we are not able to push the kitty, i.e.,
+		// if the boundedvec has reached its limit, we return an error.
+		to_owned.try_push(kitty_id).map_err(|_| Error::<T>::TooManyOwnedKitties)?;
+
+		let mut from_owned = KittiesOwned::<T>::get(&from);
+
+		// Try to remove the kitty id for the account 'from'. If it is not present, we return an
+		// error.
+		if let Some(index) = from_owned.iter().position(|&id| id == kitty_id) {
+			// 'swap_remove' will remove that given index from the vector, panics if 'index' is out
+			// of bounds.
+			from_owned.swap_remove(index);
+		} else {
+			return Err(Error::<T>::KittyNotFound.into());
+		}
+
+		// Update the 'Kitties' storage.
+		Kitties::<T>::insert(kitty_id, kitty);
+
+		// Update the 'KittiesOwned' storage for 'to'.
+		KittiesOwned::<T>::insert(&to, to_owned);
+
+		// Update the 'KittiesOwned' storage for 'from'.
+		KittiesOwned::<T>::insert(&from, from_owned);
+
 		// Emit successful transfer event.
 		Self::deposit_event(Event::<T>::Transferred { from, to, kitty_id });
 		Ok(())

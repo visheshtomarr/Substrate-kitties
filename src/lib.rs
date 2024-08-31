@@ -43,8 +43,8 @@ pub mod pallet {
 	#[pallet::storage]
 	pub(super) type KittiesOwned<T: Config> = StorageMap<
 		Key = T::AccountId,
-		// We will be using a 'BoundedVec' instead of normal vec to avoid storing too many kitties
-		// and their owner.
+		// We will be using a 'BoundedVec' instead of normal vec to avoid storing too many owned
+		// kitties.
 		Value = BoundedVec<[u8; 32], ConstU32<100>>,
 		QueryKind = ValueQuery,
 	>;
@@ -66,6 +66,12 @@ pub mod pallet {
 		DuplicateKitty,
 		/// If the number of owned kitties excceed 100.
 		TooManyOwnedKitties,
+		/// When 'from' and 'to' of the transfer is same.
+		TransferToSelf,
+		/// When kitty, which is being transferred, does not exist.
+		KittyNotFound,
+		/// When transfer is initiated by a false owner.
+		NotOwner,
 	}
 
 	#[pallet::call]
