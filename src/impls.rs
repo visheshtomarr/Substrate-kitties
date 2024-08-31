@@ -96,4 +96,16 @@ impl<T: Config> Pallet<T> {
 		Self::deposit_event(Event::<T>::Transferred { from, to, kitty_id });
 		Ok(())
 	}
+
+	// Set price for a kitty.
+	pub fn do_set_price(
+		caller: T::AccountId,
+		kitty_id: [u8; 32],
+		price: Option<BalanceOf<T>>
+	) -> DispatchResult {
+
+		// Emit successful price set event.
+		Self::deposit_event(Event::<T>::PriceSet { owner: caller, kitty_id, new_price: price });
+		Ok(())
+	}
 }

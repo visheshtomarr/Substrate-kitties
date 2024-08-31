@@ -37,6 +37,8 @@ pub mod pallet {
 		// Using 32 bytes to represent a kitty DNA.
 		pub dna: [u8; 32],
 		pub owner: T::AccountId,
+		// The Option<BalanceOf<T>> type denotes that if the price is 'None', the kitty is not for sale.
+		// And if it is Some(price), it is for sale for that 'price'.
 		pub price: Option<BalanceOf<T>>,
 	}
 
@@ -65,6 +67,8 @@ pub mod pallet {
 		Created { owner: T::AccountId },
 		/// When a kitty is successfully tranferred.
 		Transferred { from: T::AccountId, to: T::AccountId, kitty_id: [u8; 32] },
+		/// When a price is set for a kitty.
+		PriceSet { owner: T::AccountId, kitty_id: [u8; 32], new_price: Option<BalanceOf<T>> },
 	}
 
 	#[pallet::error]
@@ -107,6 +111,19 @@ pub mod pallet {
 
 			// Call the internal function 'do_transfer()' to execute the transfer logic.
 			Self::do_transfer(who, to, kitty_id)?;
+			Ok(())
+		}
+
+		/// Extrinsic to set a price for a kitty.
+		pub fn set_price(
+			origin: OriginFor<T>,
+			kitty_id: [u8; 32],
+			price: Option<BalanceOf<T>>
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			// Call the internal function 'do_set_price()' to set price for the kitty.
+			Self::do_set_price(who, kitty_id, price)?;
 			Ok(())
 		}
 	}
