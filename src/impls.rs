@@ -21,7 +21,7 @@ impl<T: Config> Pallet<T> {
 	// Mint a new kitty.
 	pub fn mint(owner: T::AccountId, dna: [u8; 32]) -> DispatchResult {
 		// Create an instance of Kitty.
-		let kitty = Kitty { dna, owner: owner.clone() };
+		let kitty = Kitty { dna, owner: owner.clone(), price: None };
 
 		// Ensure whether a kitty is already present in our storage or not.
 		ensure!(!Kitties::<T>::contains_key(dna), Error::<T>::DuplicateKitty);

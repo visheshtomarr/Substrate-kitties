@@ -23,9 +23,12 @@ pub mod pallet {
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
-		/// Access the balances pallet through the associated type 'NativeBalance'.
+		/// The fungible handler for the kitties pallet.
 		type NativeBalance: Inspect<Self::AccountId> + Mutate<Self::AccountId>;
 	}
+
+	/// Balance type for the kitties pallet.
+	pub type BalanceOf<T> = <<T as Config>::NativeBalance as Inspect<<T as frame_system::Config>::AccountId>>::Balance;
 
 	/// Struct to represent a kitty.
 	#[derive(Encode, Decode, MaxEncodedLen, TypeInfo)]
@@ -34,6 +37,7 @@ pub mod pallet {
 		// Using 32 bytes to represent a kitty DNA.
 		pub dna: [u8; 32],
 		pub owner: T::AccountId,
+		pub price: Option<BalanceOf<T>>,
 	}
 
 	/// Storage to store count of kitties.
