@@ -3,6 +3,8 @@
 mod impls;
 
 use frame::prelude::*;
+use frame::traits::fungible::Inspect;
+use frame::traits::fungible::Mutate;
 pub use pallet::*;
 
 #[frame::pallet(dev_mode)]
@@ -20,6 +22,9 @@ pub mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+
+		/// Access the balances pallet through the associated type 'NativeBalance'.
+		type NativeBalance: Inspect<Self::AccountId> + Mutate<Self::AccountId>;
 	}
 
 	/// Struct to represent a kitty.
