@@ -70,6 +70,8 @@ pub mod pallet {
 		Transferred { from: T::AccountId, to: T::AccountId, kitty_id: [u8; 32] },
 		/// When a price is set for a kitty.
 		PriceSet { owner: T::AccountId, kitty_id: [u8; 32], new_price: Option<BalanceOf<T>> },
+		/// When kitty is sold to a buyer.
+		Sold { buyer: T::AccountId, kitty_id: [u8; 32], price: BalanceOf<T> },
 	}
 
 	#[pallet::error]
@@ -125,6 +127,19 @@ pub mod pallet {
 
 			// Call the internal function 'do_set_price()' to set price for the kitty.
 			Self::do_set_price(who, kitty_id, price)?;
+			Ok(())
+		}
+
+		/// Extrinsic to buy a kitty.
+		pub fn buy_kitty(
+			origin: OriginFor<T>,
+			kitty_id: [u8; 32],
+			max_price: BalanceOf<T>
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			// Call internal function 'do_buy_kitty' to buy the kitty.
+			Self::do_buy_kitty(who, kitty_id, max_price)?;
 			Ok(())
 		}
 	}
