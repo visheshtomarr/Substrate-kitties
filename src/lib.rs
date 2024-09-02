@@ -28,7 +28,8 @@ pub mod pallet {
 	}
 
 	/// Balance type for the kitties pallet.
-	pub type BalanceOf<T> = <<T as Config>::NativeBalance as Inspect<<T as frame_system::Config>::AccountId>>::Balance;
+	pub type BalanceOf<T> =
+		<<T as Config>::NativeBalance as Inspect<<T as frame_system::Config>::AccountId>>::Balance;
 
 	/// Struct to represent a kitty.
 	#[derive(Encode, Decode, MaxEncodedLen, TypeInfo)]
@@ -37,8 +38,8 @@ pub mod pallet {
 		// Using 32 bytes to represent a kitty DNA.
 		pub dna: [u8; 32],
 		pub owner: T::AccountId,
-		// The Option<BalanceOf<T>> type denotes that if the price is 'None', the kitty is not for sale.
-		// And if it is Some(price), it is for sale for that 'price'.
+		// The Option<BalanceOf<T>> type denotes that if the price is 'None', the kitty is not for
+		// sale. And if it is Some(price), it is for sale for that 'price'.
 		pub price: Option<BalanceOf<T>>,
 	}
 
@@ -118,7 +119,7 @@ pub mod pallet {
 		pub fn set_price(
 			origin: OriginFor<T>,
 			kitty_id: [u8; 32],
-			price: Option<BalanceOf<T>>
+			price: Option<BalanceOf<T>>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 
