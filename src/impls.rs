@@ -1,6 +1,7 @@
 use super::*;
 use frame::prelude::*;
 use frame::primitives::BlakeTwo256;
+use frame::traits::tokens::Preservation;
 use frame::traits::Hash;
 
 impl<T: Config> Pallet<T> {
@@ -103,6 +104,7 @@ impl<T: Config> Pallet<T> {
 		kitty_id: [u8; 32],
 		new_price: Option<BalanceOf<T>>,
 	) -> DispatchResult {
+		// Get the kitty from the storage (if it exists).
 		let mut kitty = Kitties::<T>::get(kitty_id).ok_or(Error::<T>::KittyNotFound)?;
 
 		// Ensure whether the caller is the owner of that kitty or not.
@@ -125,9 +127,23 @@ impl<T: Config> Pallet<T> {
 		kitty_id: [u8; 32],
 		price: BalanceOf<T> 
 	) -> DispatchResult {
+		// Get the kitty from the storage (if it exists).
+		let kitty = Kitties::<T>::get(kitty_id).ok_or(Error::<T>::KittyNotFound)?;
+
+		// Get the real price of kitty (if it is for sale).
+		let real_price = kitty.price.ok_or(Error::<T>::NotForSale)?;
+
+		// Ensure whether the buying price is greater than the real price of kitty.
+		ensure!(price >= real_price, Error::<T>::MaxPriceTooLow);
+
+		// Transfer amount from buyer to seller.
+		T::NativeBalance::transfer(&buyer, &kitty.owner, real_price, Preservation::Preserve)?;
+
+		// Transfer kitty from seller to buyer.
+		Self::do_transfer(kitty.owner, buyer.clone(), kitty_id)?;
 
 		// Emit successful kitty sold event.
-		Self::deposit_event(Event::<T>::Sold { buyer, kitty_id, price });
+		Self::deposit_event(Event::<T>::Sold { buyer, kitty_id, price: real_price });
 		Ok(())
 	}
 }

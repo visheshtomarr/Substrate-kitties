@@ -88,6 +88,10 @@ pub mod pallet {
 		KittyNotFound,
 		/// When transfer is initiated by a false owner.
 		NotOwner,
+		/// When kitty has a price set to 'None'.
+		NotForSale,
+		/// When the price offered by the buyer is too low.
+		MaxPriceTooLow,
 	}
 
 	#[pallet::call]
