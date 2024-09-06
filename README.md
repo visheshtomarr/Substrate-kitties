@@ -1,6 +1,8 @@
-# Substrate Collectables Workshop: Starting Template
+# Substrate-Kittes: An NFT Marketplace built in Rust
 
-This is the starting template for: https://github.com/shawntabrizi/substrate-collectables-workshop
+- A Substrate Kitty Pallet which allows users to buy/sell owned kitties.
+- The Pallet consists of extrinsic functions through which users can create, transfer, buy and set prices for an NFT kitty.
+- This is the starting template for: https://github.com/shawntabrizi/substrate-collectables-workshop
 
 ## Setup
 
